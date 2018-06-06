@@ -46,9 +46,11 @@ def playallmatches(group):
         
     t = PrettyTable(['Team','P','GF','GA','Pts'])
     for x in group:
-        t.add_row([x,x.gp,x.gf,x.ga,x.ptd])
+        t.add_row([str(x),x.gp,x.gf,x.ga,x.ptd])
     
-    print(t.get_string(sort_key=operator.itemgetter(4, 0), sortby="Pts"))
+    t.sortby = 'Pts'
+    t.reversesort = True
+    print(t)
     
 groupa = [team(x) for x in ['England','Wales','Scotland','Northern Ireland']]
 
