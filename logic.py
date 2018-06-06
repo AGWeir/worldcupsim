@@ -1,5 +1,7 @@
 from random import randint
 import itertools
+from prettytable import PrettyTable
+import operator
 
 class team:
     def __init__(self, country):
@@ -41,13 +43,13 @@ def playallmatches(group):
     pool = tuple(itertools.combinations(group,2))
     for x in pool:
         playmatch(x[0],x[1])
-    
-    #todo put this in actual table and sort by ptd
-    print()
-    print('Team','P','GF','GA','Pts')
-    for x in group:
-        print(x,x.gp,x.gf,x.ga,x.ptd)
         
+    t = PrettyTable(['Team','P','GF','GA','Pts'])
+    for x in group:
+        t.add_row([x,x.gp,x.gf,x.ga,x.ptd])
+    
+    print(t.get_string(sort_key=operator.itemgetter(4, 0), sortby="Pts"))
+    
 groupa = [team(x) for x in ['England','Wales','Scotland','Northern Ireland']]
 
 playallmatches(groupa)
