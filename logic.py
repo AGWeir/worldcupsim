@@ -49,6 +49,46 @@ def getstrengths(team):
 	atts, defs = calcstrength(alldata[(alldata['date'].dt.year >= 2017) & (alldata['tournament'] != 'Friendly')],team)
 	return atts,defs
 
+def playallmatches(group):
+    pool = tuple(itertools.combinations(group,2))
+    for x in pool:
+        playmatch(x[0],x[1])
+
+    datadict = {'Team' : [str(x) for x in group],
+                'P' : [x.gp for x in group],
+                'GF' : [x.gf for x in group],
+                'GA' : [x.ga for x in group],
+                'Pts' : [x.ptd for x in group]}
+    #print(datadict)
+    table = pd.DataFrame(datadict)
+    return table
+    
+def playmatch(team1,team2):
+    t1xpg = team1.attstrength * team2.defstrength
+    t2xpg = team2.attstrength * team1.defstrength
+    t1probs = []
+    t2probs = []
+    for i in range(0,50):
+        t1probs.append(ss.poisson.pmf(i,t1xpg))
+        t2probs.append(ss.poisson.pmf(i,t2xpg))
+
+    t1g = choice(range(50), 1, p=t1probs)[0]
+    t2g = choice(range(50), 1, p=t2probs)[0]
+    result = str(t1g) + "-" + str(t2g)
+    #print('Result:',team1,result,team2)
+    
+    if t1g > t2g:
+        team1.update(3,t1g,t2g)
+        team2.update(0,t2g,t1g)
+		return 1,0,0
+    elif t2g  > t1g:
+        team2.update(3,t2g,t1g)
+        team1.update(0,t1g,t2g)
+        return 0,1,0
+    else:
+        team1.update(1,t1g,t2g)
+        team2.update(1,t2g,t1g)
+        return 0,0,1
 
 ## Simulate group stages	
 groupa = ['Uruguay','Russia','Egypt','Saudi Arabia']
